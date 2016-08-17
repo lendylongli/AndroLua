@@ -31,7 +31,7 @@ import java.lang.reflect.Modifier;
 
 /**
  * Class that contains functions accessed by lua.
- * 
+ *
  * @author Thiago Ponte
  */
 public final class LuaJavaAPI
@@ -43,14 +43,14 @@ public final class LuaJavaAPI
 
   /**
    * Java implementation of the metamethod __index
-   * 
+   *
    * @param luaState int that indicates the state used
    * @param obj Object to be indexed
    * @param methodName the name of the method
    * @return number of returned objects
    */
   public static int objectIndex(int luaState, Object obj, String methodName)
-      throws LuaException
+          throws LuaException
   {
     LuaState L = LuaStateFactory.getExistingState(luaState);
 
@@ -121,7 +121,7 @@ public final class LuaJavaAPI
         {
           method.setAccessible(true);
         }
-        
+
         if (obj instanceof Class)
         {
           ret = method.invoke(null, objs);
@@ -153,7 +153,7 @@ public final class LuaJavaAPI
    * Java function to be called when a java Class metamethod __index is called.
    * This function returns 1 if there is a field with searchName and 2 if there
    * is a method if the searchName
-   * 
+   *
    * @param luaState int that represents the state to be used
    * @param clazz class to be indexed
    * @param searchName name of the field or method to be accessed
@@ -161,7 +161,7 @@ public final class LuaJavaAPI
    * @throws LuaException
    */
   public static int classIndex(int luaState, Class clazz, String searchName)
-      throws LuaException
+          throws LuaException
   {
     synchronized (LuaStateFactory.getExistingState(luaState))
     {
@@ -187,14 +187,14 @@ public final class LuaJavaAPI
 
   /**
    * Pushes a new instance of a java Object of the type className
-   * 
+   *
    * @param luaState int that represents the state to be used
    * @param className name of the class
    * @return number of returned objects
    * @throws LuaException
    */
   public static int javaNewInstance(int luaState, String className)
-      throws LuaException
+          throws LuaException
   {
     LuaState L = LuaStateFactory.getExistingState(luaState);
 
@@ -219,7 +219,7 @@ public final class LuaJavaAPI
 
   /**
    * javaNew returns a new instance of a given clazz
-   * 
+   *
    * @param luaState int that represents the state to be used
    * @param clazz class to be instanciated
    * @return number of returned objects
@@ -249,10 +249,10 @@ public final class LuaJavaAPI
    * @throws LuaException
    */
   public static int javaLoadLib(int luaState, String className, String methodName)
-  	throws LuaException
+          throws LuaException
   {
     LuaState L = LuaStateFactory.getExistingState(luaState);
-    
+
     synchronized (L)
     {
       Class clazz;
@@ -269,7 +269,7 @@ public final class LuaJavaAPI
       {
         Method mt = clazz.getMethod(methodName, new Class[] {LuaState.class});
         Object obj = mt.invoke(null, new Object[] {L});
-        
+
         if (obj != null && obj instanceof Integer)
         {
           return ((Integer) obj).intValue();
@@ -285,82 +285,82 @@ public final class LuaJavaAPI
   }
 
   private static Object getObjInstance(LuaState L, Class clazz)
-      throws LuaException
+          throws LuaException
   {
     synchronized (L)
     {
-	    int top = L.getTop();
-	
-	    Object[] objs = new Object[top - 1];
-	
-	    Constructor[] constructors = clazz.getConstructors();
-	    Constructor constructor = null;
-	
-	    // gets method and arguments
-	    for (int i = 0; i < constructors.length; i++)
-	    {
-	      Class[] parameters = constructors[i].getParameterTypes();
-	      if (parameters.length != top - 1)
-	        continue;
-	
-	      boolean okConstruc = true;
-	
-	      for (int j = 0; j < parameters.length; j++)
-	      {
-	        try
-	        {
-	          objs[j] = compareTypes(L, parameters[j], j + 2);
-	        }
-	        catch (Exception e)
-	        {
-	          okConstruc = false;
-	          break;
-	        }
-	      }
-	
-	      if (okConstruc)
-	      {
-	        constructor = constructors[i];
-	        break;
-	      }
-	
-	    }
-	
-	    // If method is null means there isn't one receiving the given arguments
-	    if (constructor == null)
-	    {
-	      throw new LuaException("Invalid method call. No such method.");
-	    }
-	
-	    Object ret;
-	    try
-	    {
-	      ret = constructor.newInstance(objs);
-	    }
-	    catch (Exception e)
-	    {
-	      throw new LuaException(e);
-	    }
-	
-	    if (ret == null)
-	    {
-	      throw new LuaException("Couldn't instantiate java Object");
-	    }
-	
-	    return ret;
+      int top = L.getTop();
+
+      Object[] objs = new Object[top - 1];
+
+      Constructor[] constructors = clazz.getConstructors();
+      Constructor constructor = null;
+
+      // gets method and arguments
+      for (int i = 0; i < constructors.length; i++)
+      {
+        Class[] parameters = constructors[i].getParameterTypes();
+        if (parameters.length != top - 1)
+          continue;
+
+        boolean okConstruc = true;
+
+        for (int j = 0; j < parameters.length; j++)
+        {
+          try
+          {
+            objs[j] = compareTypes(L, parameters[j], j + 2);
+          }
+          catch (Exception e)
+          {
+            okConstruc = false;
+            break;
+          }
+        }
+
+        if (okConstruc)
+        {
+          constructor = constructors[i];
+          break;
+        }
+
+      }
+
+      // If method is null means there isn't one receiving the given arguments
+      if (constructor == null)
+      {
+        throw new LuaException("Invalid method call. No such method.");
+      }
+
+      Object ret;
+      try
+      {
+        ret = constructor.newInstance(objs);
+      }
+      catch (Exception e)
+      {
+        throw new LuaException(e);
+      }
+
+      if (ret == null)
+      {
+        throw new LuaException("Couldn't instantiate java Object");
+      }
+
+      return ret;
     }
   }
 
   /**
    * Checks if there is a field on the obj with the given name
-   * 
+   *
    * @param luaState int that represents the state to be used
    * @param obj object to be inspected
    * @param fieldName name of the field to be inpected
    * @return number of returned objects
    */
   public static int checkField(int luaState, Object obj, String fieldName)
-  	throws LuaException
+          throws LuaException
   {
     LuaState L = LuaStateFactory.getExistingState(luaState);
 
@@ -415,7 +415,7 @@ public final class LuaJavaAPI
 
   /**
    * Checks to see if there is a method with the given name.
-   * 
+   *
    * @param luaState int that represents the state to be used
    * @param obj object to be inspected
    * @param methodName name of the field to be inpected
@@ -452,14 +452,14 @@ public final class LuaJavaAPI
 
   /**
    * Function that creates an object proxy and pushes it into the stack
-   * 
+   *
    * @param luaState int that represents the state to be used
    * @param implem interfaces implemented separated by comma (<code>,</code>)
    * @return number of returned objects
    * @throws LuaException
    */
   public static int createProxyObject(int luaState, String implem)
-    throws LuaException
+          throws LuaException
   {
     LuaState L = LuaStateFactory.getExistingState(luaState);
 
@@ -469,7 +469,7 @@ public final class LuaJavaAPI
       {
         if (!(L.isTable(2)))
           throw new LuaException(
-              "Parameter is not a table. Can't create proxy.");
+                  "Parameter is not a table. Can't create proxy.");
 
         LuaObject luaObj = L.getLuaObject(2);
 
@@ -486,7 +486,7 @@ public final class LuaJavaAPI
   }
 
   private static Object compareTypes(LuaState L, Class parameter, int idx)
-    throws LuaException
+          throws LuaException
   {
     boolean okType = true;
     Object obj = null;
@@ -506,7 +506,7 @@ public final class LuaJavaAPI
       }
       obj = new Boolean(L.toBoolean(idx));
     }
-    else if (L.type(idx) == LuaState.LUA_TSTRING.intValue())
+    else if (L.type(idx) == LuaState.LUA_TSTRING)
     {
       if (!parameter.isAssignableFrom(String.class))
       {
@@ -539,10 +539,10 @@ public final class LuaJavaAPI
         obj = L.getLuaObject(idx);
       }
     }
-    else if (L.type(idx) == LuaState.LUA_TNUMBER.intValue())
+    else if (L.type(idx) == LuaState.LUA_TNUMBER)
     {
       Double db = new Double(L.toNumber(idx));
-      
+
       obj = LuaState.convertLuaNumber(db, parameter);
       if (obj == null)
       {

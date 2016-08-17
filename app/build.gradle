@@ -16,4 +16,11 @@ android {
             proguardFiles 'proguard.cfg'
         }
     }
+
+    sourceSets {
+        main {
+            jni.srcDirs = []
+            jniLibs.srcDirs = ["src/main/libs"]
+        }
+    }
 }
