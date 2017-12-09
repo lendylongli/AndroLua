@@ -60,6 +60,7 @@ jint jni_objlen  (JNIEnv * env , jobject jobj , jobject cptr , jint idx);
 jobject jni_toThread  (JNIEnv * env , jobject jobj , jobject cptr , jint idx);
 void jni_pushNil  (JNIEnv * env , jobject jobj , jobject cptr);
 void jni_pushNumber  (JNIEnv * env , jobject jobj , jobject cptr , jdouble number);
+void jni_pushInteger  (JNIEnv * env , jobject jobj , jobject cptr , jint i);
 void jni_pushString  (JNIEnv * env , jobject jobj , jobject cptr , jstring str);
 void jni_pushString2  (JNIEnv * env , jobject jobj , jobject cptr , jbyteArray bytes , jint n);
 void jni_pushBoolean  (JNIEnv * env , jobject jobj , jobject cptr , jint jbool);
@@ -163,6 +164,7 @@ static JNINativeMethod jni_methods[] = {
 		{"_toThread", "("CPTR_CLASS_PATH"I)"OBJECT_CLASS_PATH, (void*)jni_toThread},
 		{"_pushNil", "("CPTR_CLASS_PATH")V", (void*)jni_pushNil},
 		{"_pushNumber", "("CPTR_CLASS_PATH"D)V", (void*)jni_pushNumber},
+		{"_pushInteger", "("CPTR_CLASS_PATH"I)V", (void*)jni_pushInteger},
 		{"_pushString", "("CPTR_CLASS_PATH""STRING_CLASS_PATH")V", (void*)jni_pushString},
 		{"_pushString2", "("CPTR_CLASS_PATH"[BI)V", (void*)jni_pushString2},
 		{"_pushBoolean", "("CPTR_CLASS_PATH"I)V", (void*)jni_pushBoolean},

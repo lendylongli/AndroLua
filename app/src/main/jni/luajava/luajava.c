@@ -2456,6 +2456,20 @@ void  jni_pushNumber
 *      Lua Exported Function
 ************************************************************************/
 
+void  jni_pushInteger
+  (JNIEnv * env , jobject jobj , jobject cptr , jint i)
+{
+   lua_State * L = getStateFromCPtr( env , cptr );
+
+   lua_pushinteger( L , ( lua_Integer ) i );
+}
+
+
+/************************************************************************
+*   JNI Called function
+*      Lua Exported Function
+************************************************************************/
+
 void  jni_pushString
   (JNIEnv * env , jobject jobj , jobject cptr , jstring str)
 {

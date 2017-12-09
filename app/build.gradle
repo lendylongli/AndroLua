@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "24.0.1"
+    buildToolsVersion "26.0.2"
 
     defaultConfig {
         applicationId "sk.kottman.androlua"
@@ -21,6 +21,11 @@ android {
         main {
             jni.srcDirs = []
             jniLibs.srcDirs = ["src/main/libs"]
+        }
+    }
+    externalNativeBuild {
+        ndkBuild {
+            path 'src/main/jni/Android.mk'
         }
     }
 }
